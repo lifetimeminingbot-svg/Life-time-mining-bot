@@ -45,16 +45,37 @@
       if (i18n[lang] && i18n[lang][key]) el.textContent = i18n[lang][key];
     });
     document.getElementById('langSelect').value = lang;
-    renderLeaderboard(); // Refresh leaderboard labels if needed
+    renderLeaderboard();
   }
 
   /* ============================================================
-     CRYPTO & SECURITY
+     SECURITY & CRYPTO FIXES (XSS & HASHING)
      ============================================================ */
   const APP_SALT = 'LTM_2024_SECURE_9X2_PV';
   const REF_BONUS = 0.05;
   const BONUS_SCHEDULE = [0.10, 0.10, 0.10, 0.10];
   const RATE_PER_HP_DAY = 1/54;
+
+  // XSS Protection: Escape HTML characters
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g, 
+      tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag)
+    );
+  }
+
+  // Password Hashing (SHA-256) using Web Crypto API
+  async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password + APP_SALT);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   function simpleHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
   function deviceFP(){try{const p=[navigator.userAgent||'',navigator.language||'',screen.width,screen.height,screen.colorDepth,new Date().getTimezoneOffset()];return simpleHash(p.join('|'));}catch(e){return 'fp_unknown';}}
@@ -101,7 +122,7 @@
   function saveAccounts(list){localStorage.setItem('__ltm_accounts',JSON.stringify(list));}
 
   /* ============================================================
-     AUTH & LOGIN
+     AUTH & LOGIN (UPDATED FOR ASYNC HASHING)
      ============================================================ */
   function switchAuthTab(tab){
     document.getElementById('tabSignIn').classList.toggle('active', tab==='signin');
@@ -118,7 +139,7 @@
     }
   }
 
-  function doSignUp(){
+  async function doSignUp(){
     const name = document.getElementById('suName').value.trim();
     const email = document.getElementById('suEmail').value.trim().toLowerCase();
     const pass = document.getElementById('suPass').value;
@@ -130,14 +151,16 @@
     if(accounts.find(a => a.email === email)) return toast('Email already registered');
 
     const avatarSeed = Math.random().toString(36).substring(7);
-    accounts.push({email, name, pass, avatarSeed, joinedAt: new Date().toISOString()});
+    const hashedPass = await hashPassword(pass); // HASHING PASSWORD
+    
+    accounts.push({email, name, passHash: hashedPass, avatarSeed, joinedAt: new Date().toISOString()});
     saveAccounts(accounts);
 
     loginUser(email, name, avatarSeed);
     popupNotify('Welcome!', 'Your account has been created successfully.');
   }
 
-  function doSignIn(){
+  async function doSignIn(){
     const email = document.getElementById('siEmail').value.trim().toLowerCase();
     const pass = document.getElementById('siPass').value;
     if(!email || !pass) return toast('Fill email & password');
@@ -145,7 +168,10 @@
     const accounts = getAccounts();
     const acc = accounts.find(a => a.email === email);
     if(!acc) return toast('Account not found');
-    if(acc.pass !== pass) return toast('Incorrect password');
+    
+    // Check hashed password
+    const hashedPass = await hashPassword(pass);
+    if(acc.passHash !== hashedPass) return toast('Incorrect password');
 
     loginUser(acc.email, acc.name, acc.avatarSeed);
   }
@@ -161,7 +187,7 @@
     toast('Logged in via Gmail');
   }
 
-  function forgotPassword() {
+  async function forgotPassword() {
     const email = prompt("Enter your email to reset password:");
     if(!email) return;
     const accounts = getAccounts();
@@ -171,7 +197,7 @@
     const newPass = prompt("Enter new password:");
     if(!newPass || newPass.length < 6) return toast('Password too short');
     
-    acc.pass = newPass;
+    acc.passHash = await hashPassword(newPass);
     saveAccounts(accounts);
     toast('Password reset successfully. Please login.');
   }
@@ -245,7 +271,6 @@
     document.getElementById('profTotalBalance').textContent = '$' + (balance + unclaimed).toFixed(4);
     document.getElementById('profTotalHP').textContent = hp.toFixed(2);
     
-    // Advanced Level Logic
     let lvl = "VIP 1";
     if(hp >= 10) lvl = "VIP 2";
     if(hp >= 50) lvl = "VIP 3";
@@ -253,7 +278,6 @@
     if(hp >= 500) lvl = "PLATINUM";
     document.getElementById('userLevel').textContent = lvl;
 
-    // Referral
     const eh = emailHash(userProfile.email);
     let cnt = parseInt(localStorage.getItem('__ltm_pc_'+eh) || '0');
     document.getElementById('refCountDisplay').textContent = cnt;
@@ -272,12 +296,11 @@
   }
 
   /* ============================================================
-     RANDOM LEADERBOARD
+     LEADERBOARD (UPDATED FOR XSS PROTECTION)
      ============================================================ */
   function renderLeaderboard() {
     const el = document.getElementById('leaderboard');
     
-    // Generate Random Users (if not exists)
     let fakeUsers = JSON.parse(localStorage.getItem('__ltm_fake_lb') || '[]');
     if (fakeUsers.length === 0) {
       const names = ['CryptoKing', 'Alpha01', 'MinerX', 'Satoshi_Jr', 'MoonBoy', 'EthWhale', 'Bob_Marley', 'Quantum1', 'Neo_Miner', 'Trinity'];
@@ -287,7 +310,6 @@
       localStorage.setItem('__ltm_fake_lb', JSON.stringify(fakeUsers));
     }
 
-    // Combine with real accounts
     const accounts = getAccounts();
     let allUsers = [...fakeUsers];
     
@@ -301,17 +323,17 @@
       }
     });
 
-    // Sort and take top 3
     allUsers.sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
     const top3 = allUsers.slice(0, 3);
 
     el.innerHTML = top3.map((u, i) => {
       const medals = ['🥇', '🥈', '🥉'];
+      // XSS FIX: Used escapeHTML
       return `
         <div class="lb-item">
           <div class="lb-left">
             <div class="lb-rank-icon">${medals[i]}</div>
-            <div class="lb-user">${u.name}</div>
+            <div class="lb-user">${escapeHTML(u.name)}</div>
           </div>
           <div class="lb-amount">$${u.balance}</div>
         </div>
@@ -464,11 +486,12 @@
     el.innerHTML = all.slice(0, 5).map(req => {
       let statusClass = req.status === 'Approved' ? 'status-approved' : (req.status === 'Rejected' ? 'status-rejected' : 'status-pending');
       let dispStatus = req.status === 'Approved' ? 'Completed' : req.status;
+      // XSS FIX: Used escapeHTML
       return `
         <div class="request-item">
           <div>
-            <div class="request-title">${req.type} - $${req.amount.toFixed(2)}</div>
-            <div class="request-meta">${req.extra} | ${req.time.split(',')[0]}</div>
+            <div class="request-title">${escapeHTML(req.type)} - $${req.amount.toFixed(2)}</div>
+            <div class="request-meta">${escapeHTML(req.extra)} | ${req.time.split(',')[0]}</div>
           </div>
           <div class="request-status ${statusClass}">${dispStatus}</div>
         </div>
@@ -495,10 +518,11 @@
     el.innerHTML = historyLogs.map(it=>{
       const pos = it.amount > 0;
       let amtClass = pos ? 'amount-pos' : (it.amount < 0 ? 'amount-neg' : 'amount-neutral');
+      // XSS FIX: Used escapeHTML
       return `
         <div class="history-item">
           <div>
-            <div class="history-title">${it.type}</div>
+            <div class="history-title">${escapeHTML(it.type)}</div>
             <div class="history-time">${it.time}</div>
           </div>
           <div class="history-amount ${amtClass}">${pos?'+':''}${it.amount===0?'—':Number(it.amount).toFixed(4)}</div>
@@ -516,7 +540,6 @@
     toastT=setTimeout(()=>t.classList.remove('show'),2500);
   }
 
-  // White Apple-Style Notification
   let notifyT;
   function popupNotify(title, body) {
     document.getElementById('notifyTitle').textContent = title;
@@ -549,7 +572,6 @@
       showAuth();
     }
 
-    // Mining tick (1s)
     setInterval(()=>{
       if(hp > 0 && userProfile){
         unclaimed += (hp * RATE_PER_HP_DAY) / 86400;
@@ -557,13 +579,10 @@
       }
     }, 1000);
 
-    // Auto save (5s)
     setInterval(()=>{ if(userProfile) saveState(); }, 5000);
 
-    // Sync admin updates & refresh requests
     setInterval(()=>{
       if(!userProfile) return;
-      // Reload state to see if admin changed anything
       const enc = localStorage.getItem(userStorageKey(userProfile.email));
       if(enc) {
         const d = decryptObj(enc, userProfile.email);
@@ -583,7 +602,7 @@
 
   window.onload = init;
 
-  // Expose functions to global scope for HTML inline event listeners (onclick, etc.)
+  // Expose functions to global scope for HTML inline event listeners
   window.setLanguage = setLanguage;
   window.switchAuthTab = switchAuthTab;
   window.doSignUp = doSignUp;
