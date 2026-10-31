@@ -1,18 +1,3 @@
-/* 
-  NEW CLASSES CREATED FROM INLINE STYLES:
-  .auth-links, .btn-link, .btn-link-gmail, .hidden
-  .unclaimed-label, .card-title, .bonus-grid, .mt-15, .section-title
-  .text-center, .text-green, .flex-row, .mt-0, .empty-state, .border-left
-  .mt-20, .rounded-12, .section-title-sm, .text-muted-sm, .ref-code-box
-  .ref-stats-row, .stat-val, .stat-lbl, .text-gold, .section-title-lg
-  .empty-state-lg, .modal-title, .modal-label, .relative, .text-white
-  .deposit-address-input, .copy-btn-absolute, .mb-16, .settings-box
-  .settings-title, .settings-select, .support-link, .danger-box, .btn-logout
-  .bonus-day-box, .request-item, .request-title, .request-meta, .request-status
-  .status-approved, .status-rejected, .status-pending, .history-item
-  .history-title, .history-time, .history-amount, .amount-pos, .amount-neg, .amount-neutral
-*/
-
 :root {
   --bg: #09090b; --surface: #18181b; --surface-hover: #27272a; --border: rgba(255, 255, 255, 0.1);
   --text-main: #fafafa; --text-muted: #a1a1aa;
@@ -89,7 +74,7 @@ body { background: #000; color: var(--text-main); height: 100vh; height: 100dvh;
 .btn-primary { width: 100%; padding: 14px; border-radius: 12px; background: #fff; color: #000; font-weight: 800; border: none; cursor: pointer; font-size: 14px; margin-top: 10px; }
 .btn-secondary { width: 100%; padding: 14px; border-radius: 12px; background: var(--surface-hover); color: #fff; font-weight: 800; border: none; cursor: pointer; font-size: 14px; margin-top: 10px; }
 .network-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-.net-btn { padding: 8px; border-radius: 8px; background: var(--surface-hover); border: 1px solid transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; }
+.net-btn { padding: 8px; border-radius: 8px; background: var(--surface-hover); border: 1px solid transparent; color: var(--text-muted); font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; font-family: inherit; }
 .net-btn.active { background: #fff; border-color: #fff; color: #000; }
 .copy-btn { background: #fff; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; margin-top: 8px; font-weight: 800; }
 
@@ -111,9 +96,29 @@ body { background: #000; color: var(--text-main); height: 100vh; height: 100dvh;
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 2000; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* Bottom Nav */
+/* Bottom Nav (FIXED) */
 .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background: rgba(9, 9, 11, 0.9); backdrop-filter: blur(15px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); z-index: 100; }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+
+/* Nav Item Button Reset for a11y and proper styling */
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .nav-item svg { width: 22px; height: 22px; }
 .nav-item.active { color: #fff; }
 
