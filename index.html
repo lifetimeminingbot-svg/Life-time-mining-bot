@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<!-- Fixed: Removed user-scalable=no for Accessibility -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B0914">
 <title>Life Time Mining</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
@@ -19,7 +20,8 @@
         <div class="h-title"><h1 data-i18n="app_title">LIFE TIME MINING</h1><p data-i18n="app_sub">QUANTUM PLATFORM</p></div>
       </div>
       <div class="header-actions">
-        <div class="icon-btn" onclick="openSettingsModal()">⚙️</div>
+        <!-- Fixed: Changed to button -->
+        <button class="icon-btn" onclick="openSettingsModal()">⚙️</button>
       </div>
     </div>
 
@@ -105,7 +107,8 @@
       <div class="card profile-card">
         <div class="avatar-container">
           <img id="userAvatar" class="avatar-img" src="" alt="Avatar">
-          <div class="btn-change-avatar" onclick="changeAvatar()">🔄</div>
+          <!-- Fixed: Changed to button -->
+          <button class="btn-change-avatar" onclick="changeAvatar()">🔄</button>
         </div>
         <div class="p-name" id="dispName">User Name</div>
         <div class="p-email" id="dispEmail">email@x.com</div>
@@ -147,22 +150,23 @@
 
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="navigate('home')">
+    <!-- Fixed: Changed all nav items to buttons -->
+    <button class="nav-item active" id="nav-home" onclick="navigate('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span data-i18n="nav_home">Mining</span>
-    </div>
-    <div class="nav-item" id="nav-wallet" onclick="navigate('wallet')">
+    </button>
+    <button class="nav-item" id="nav-wallet" onclick="navigate('wallet')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 12h2"/></svg>
       <span data-i18n="nav_wallet">Wallet</span>
-    </div>
-    <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="navigate('profile')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span data-i18n="nav_profile">Account</span>
-    </div>
-    <div class="nav-item" id="nav-history" onclick="navigate('history')">
+    </button>
+    <button class="nav-item" id="nav-history" onclick="navigate('history')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       <span data-i18n="nav_history">History</span>
-    </div>
+    </button>
   </div>
 </div>
 
@@ -172,12 +176,13 @@
     <h3 class="modal-title" data-i18n="deposit_usdt">Deposit USDT</h3>
     <label class="modal-label" data-i18n="select_network">Select Network</label>
     <div class="network-grid" id="netGrid">
-      <div class="net-btn active" onclick="selectNetwork('BEP20', event)">BSC (BEP20)</div>
-      <div class="net-btn" onclick="selectNetwork('TRC20', event)">Tron (TRC20)</div>
-      <div class="net-btn" onclick="selectNetwork('ERC20', event)">Ethereum (ERC20)</div>
-      <div class="net-btn" onclick="selectNetwork('SOL', event)">Solana (SOL)</div>
-      <div class="net-btn" onclick="selectNetwork('TON', event)">TON</div>
-      <div class="net-btn" onclick="selectNetwork('APT', event)">Aptos (APT)</div>
+      <!-- Fixed: Changed to buttons -->
+      <button class="net-btn active" onclick="selectNetwork('BEP20', event)">BSC (BEP20)</button>
+      <button class="net-btn" onclick="selectNetwork('TRC20', event)">Tron (TRC20)</button>
+      <button class="net-btn" onclick="selectNetwork('ERC20', event)">Ethereum (ERC20)</button>
+      <button class="net-btn" onclick="selectNetwork('SOL', event)">Solana (SOL)</button>
+      <button class="net-btn" onclick="selectNetwork('TON', event)">TON</button>
+      <button class="net-btn" onclick="selectNetwork('APT', event)">Aptos (APT)</button>
     </div>
     
     <div class="input-box mt-0 relative">
