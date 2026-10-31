@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0B0914">
+<title>Life Time Mining</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <div class="pages-wrapper" id="pagesWrapper">
+    
+    <!-- HEADER -->
+    <div class="header">
+      <div class="h-left">
+        <div class="h-title"><h1 data-i18n="app_title">LIFE TIME MINING</h1><p data-i18n="app_sub">QUANTUM PLATFORM</p></div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" onclick="openSettingsModal()">⚙️</div>
+      </div>
+    </div>
+
+    <!-- AUTH PAGE -->
+    <div class="page active" id="page-auth">
+      <div class="card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')" data-i18n="sign_in">Sign In</button>
+          <button class="auth-tab" id="tabSignUp" onclick="switchAuthTab('signup')" data-i18n="sign_up">Sign Up</button>
+        </div>
+        
+        <div id="signinForm">
+          <div class="input-box"><label data-i18n="email">Email</label><input type="email" id="siEmail" placeholder="your@gmail.com"></div>
+          <div class="input-box"><label data-i18n="password">Password</label><input type="password" id="siPass" placeholder="••••••••"></div>
+          <button class="btn-primary" onclick="doSignIn()" data-i18n="sign_in">Sign In</button>
+          
+          <div class="auth-links">
+            <button onclick="forgotPassword()" class="btn-link" data-i18n="forgot_pass">Forgot Password?</button>
+            <button onclick="googleLogin()" class="btn-link-gmail">Login with Gmail</button>
+          </div>
+        </div>
+
+        <div id="signupForm" class="hidden">
+          <div class="input-box"><label data-i18n="full_name">Full Name</label><input type="text" id="suName" placeholder="Your name"></div>
+          <div class="input-box"><label data-i18n="email">Email</label><input type="email" id="suEmail" placeholder="your@gmail.com"></div>
+          <div class="input-box"><label data-i18n="password">Password</label><input type="password" id="suPass" placeholder="••••••••"></div>
+          <button class="btn-primary" onclick="doSignUp()" data-i18n="create_account">Create Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div class="page" id="page-home">
+      <div class="card balance-card">
+        <div class="bal-title" data-i18n="main_balance">Main Balance</div>
+        <div class="bal-amount">$<span id="userBalance">0.000000</span></div>
+      </div>
+
+      <div class="mining-dashboard">
+        <div class="hash-rate"><span data-i18n="hash_power">Hash Power</span>: <span id="userHP">0.00</span> HP</div>
+        <div class="quantum-reactor">
+          <div class="ring ring-outer"></div><div class="ring ring-mid"></div>
+          <div class="core-orb"></div>
+        </div>
+        <div class="unclaimed-label" data-i18n="unclaimed">Unclaimed Mining</div>
+        <div class="unclaimed-big">$<span id="unclaimedBal">0.000000</span></div>
+        <button class="btn-claim-big" onclick="claimEarnings()" data-i18n="claim_now">CLAIM NOW</button>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" data-i18n="daily_bonus">🎁 4-Day Bonus — $0.10 / day</h3>
+        <div class="bonus-grid" id="bonusGrid"></div>
+        <button class="btn-secondary mt-15" onclick="claimBonus()" data-i18n="claim_daily">Claim Daily $0.10</button>
+      </div>
+
+      <div class="lb-container">
+        <h3 class="section-title" data-i18n="leaderboard">🏆 Top Miners</h3>
+        <div id="leaderboard"></div>
+      </div>
+    </div>
+
+    <!-- WALLET PAGE -->
+    <div class="page" id="page-wallet">
+      <div class="card text-center">
+        <div class="bal-title" data-i18n="available_balance">Available Balance</div>
+        <div class="bal-amount text-green">$<span id="walletBalance">0.0000</span></div>
+        <div class="flex-row mt-15">
+          <button class="btn-secondary mt-0" onclick="openDepositModal()" data-i18n="deposit">📥 Deposit</button>
+          <button class="btn-primary mt-0" onclick="openWithdrawModal()" data-i18n="withdraw">📤 Withdraw</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title" data-i18n="my_requests">📋 Recent Requests</h3>
+        <div id="requestList">
+          <p class="empty-state">No requests yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="card profile-card">
+        <div class="avatar-container">
+          <img id="userAvatar" class="avatar-img" src="" alt="Avatar">
+          <div class="btn-change-avatar" onclick="changeAvatar()">🔄</div>
+        </div>
+        <div class="p-name" id="dispName">User Name</div>
+        <div class="p-email" id="dispEmail">email@x.com</div>
+        <div class="p-badge" id="userLevel">VIP 1</div>
+        
+        <div class="p-stats">
+          <div class="p-stat-box">
+            <div class="p-stat-val" id="profTotalBalance">$0.00</div>
+            <div class="p-stat-lbl" data-i18n="total_bal">Total Balance</div>
+          </div>
+          <div class="p-stat-box border-left">
+            <div class="p-stat-val" id="profTotalHP">0.00</div>
+            <div class="p-stat-lbl" data-i18n="total_hp">Total HP</div>
+          </div>
+        </div>
+        <button class="btn-secondary mt-20 rounded-12" onclick="openWithdrawModal()" data-i18n="withdraw">📤 Withdraw Funds</button>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title-sm" data-i18n="ref_prog">🎁 Referral Program</h3>
+        <p class="text-muted-sm" data-i18n="ref_desc">প্রতি রেফারেলে 0.05 HP বোনাস!</p>
+        <div class="ref-code-box" id="myRefCode">------</div>
+        <button class="btn-primary" onclick="copyReferral()" data-i18n="copy_ref">📋 Copy Referral Link</button>
+        <div class="ref-stats-row">
+          <div class="text-center"><div class="stat-val" id="refCountDisplay">0</div><div class="stat-lbl" data-i18n="refs">Referrals</div></div>
+          <div class="text-center"><div class="stat-val text-gold" id="refHPDisplay">0.00</div><div class="stat-lbl" data-i18n="hp_earned">HP Earned</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="page" id="page-history">
+      <div class="card">
+        <h3 class="section-title-lg" data-i18n="history">📜 Transaction History</h3>
+        <div id="historyList"><p class="empty-state-lg">No transactions yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="navigate('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span data-i18n="nav_home">Mining</span>
+    </div>
+    <div class="nav-item" id="nav-wallet" onclick="navigate('wallet')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M16 12h2"/></svg>
+      <span data-i18n="nav_wallet">Wallet</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span data-i18n="nav_profile">Account</span>
+    </div>
+    <div class="nav-item" id="nav-history" onclick="navigate('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span data-i18n="nav_history">History</span>
+    </div>
+  </div>
+</div>
+
+<!-- DEPOSIT MODAL -->
+<div class="modal-overlay" id="depModal">
+  <div class="modal">
+    <h3 class="modal-title" data-i18n="deposit_usdt">Deposit USDT</h3>
+    <label class="modal-label" data-i18n="select_network">Select Network</label>
+    <div class="network-grid" id="netGrid">
+      <div class="net-btn active" onclick="selectNetwork('BEP20', event)">BSC (BEP20)</div>
+      <div class="net-btn" onclick="selectNetwork('TRC20', event)">Tron (TRC20)</div>
+      <div class="net-btn" onclick="selectNetwork('ERC20', event)">Ethereum (ERC20)</div>
+      <div class="net-btn" onclick="selectNetwork('SOL', event)">Solana (SOL)</div>
+      <div class="net-btn" onclick="selectNetwork('TON', event)">TON</div>
+      <div class="net-btn" onclick="selectNetwork('APT', event)">Aptos (APT)</div>
+    </div>
+    
+    <div class="input-box mt-0 relative">
+      <label><span data-i18n="address">Address</span> <span id="selectedNetLabel" class="text-white">(BEP20)</span></label>
+      <input type="text" id="depAddr" readonly class="deposit-address-input">
+      <button class="copy-btn copy-btn-absolute" onclick="copyDepositAddress()" data-i18n="copy">Copy</button>
+    </div>
+
+    <div class="input-box">
+      <label data-i18n="amount_min_1">Amount (Min $1.00)</label>
+      <input type="number" id="depAmtInput" placeholder="10" min="1" step="0.01">
+    </div>
+    <div class="input-box">
+      <label data-i18n="txid">Transaction Hash (TxID)</label>
+      <input type="text" id="depTxInput" placeholder="Paste TxID here">
+    </div>
+    <button class="btn-primary" onclick="submitDeposit()" data-i18n="submit">Submit</button>
+    <button class="btn-secondary" onclick="document.getElementById('depModal').classList.remove('active')" data-i18n="cancel">Cancel</button>
+  </div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="wdModal">
+  <div class="modal">
+    <h3 class="modal-title" data-i18n="withdraw_uid">Withdraw via Binance UID</h3>
+    <div class="input-box">
+      <label data-i18n="binance_uid">Your Binance UID</label>
+      <input type="number" id="wdUidInput" placeholder="Enter UID">
+    </div>
+    <div class="input-box">
+      <label data-i18n="amount_min_010">Amount (Min $0.10)</label>
+      <input type="number" id="wdAmountInput" placeholder="0.10" min="0.10" step="0.01">
+    </div>
+    <button class="btn-primary" onclick="submitWithdrawal()" data-i18n="confirm">Confirm Withdrawal</button>
+    <button class="btn-secondary" onclick="document.getElementById('wdModal').classList.remove('active')" data-i18n="cancel">Cancel</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal text-center">
+    <h3 class="mb-16" data-i18n="settings">⚙️ Settings & Support</h3>
+    
+    <div class="settings-box">
+      <h4 class="settings-title" data-i18n="language">🌐 Language</h4>
+      <select onchange="setLanguage(this.value)" id="langSelect" class="settings-select">
+        <option value="en">English</option>
+        <option value="bn">বাংলা</option>
+      </select>
+    </div>
+
+    <div class="settings-box">
+      <h4 class="settings-title" data-i18n="support">📞 Support</h4>
+      <a href="https://t.me/Rocoine" target="_blank" class="support-link">Contact Admin (@Rocoine)</a>
+    </div>
+
+    <div class="settings-box danger-box">
+      <button onclick="doLogout()" class="btn-logout" data-i18n="logout">🚪 Log Out</button>
+    </div>
+
+    <button class="btn-secondary" onclick="document.getElementById('settingsModal').classList.remove('active')" data-i18n="close">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- APPLE-STYLE NOTIFICATION -->
+<div class="notify-overlay" id="notifyOverlay">
+  <div class="notify-card" onclick="document.getElementById('notifyOverlay').classList.remove('active')">
+    <div class="notify-icon" id="notifyIcon">🔔</div>
+    <div class="notify-content">
+      <h4 id="notifyTitle">Notification</h4>
+      <p id="notifyBody">Message goes here.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>
